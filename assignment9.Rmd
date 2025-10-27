@@ -1,0 +1,108 @@
+---
+title: "Assignment #9 – Visualization in R (Base, lattice, ggplot2)"
+author: "Gabriel Myles"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.path = "figs/")
+```
+
+## Dataset
+
+We use **mtcars** from the **datasets** package (Rdatasets collection).
+
+```{r}
+library(lattice)
+library(ggplot2)
+data("mtcars", package = "datasets")
+mtcars$cyl_f <- factor(mtcars$cyl)
+mtcars$gear_f <- factor(mtcars$gear)
+head(mtcars)
+```
+
+## 1) Base R Graphics
+
+### A. Scatterplot with OLS line
+
+```{r}
+plot(mtcars$wt, mtcars$mpg,
+     pch = 19, col = "steelblue",
+     xlab = "Weight (1000 lbs)", ylab = "Miles per Gallon (MPG)",
+     main = "Base R: MPG vs Weight")
+abline(lm(mpg ~ wt, data = mtcars), col = "firebrick", lwd = 2)
+legend("topright", legend = c("Cars", "OLS fit"),
+       pch = c(19, NA), lty = c(NA, 1), col = c("steelblue", "firebrick"), bty = "n")
+```
+
+**Interpretation.** Heavier cars tend to have lower MPG; the linear trend is clearly negative.
+
+### B. Histogram of MPG
+
+```{r}
+hist(mtcars$mpg,
+     breaks = 10, col = "gray85", border = "white",
+     main = "Base R: Distribution of MPG", xlab = "MPG")
+rug(mtcars$mpg)
+```
+
+**Interpretation.** MPG is roughly unimodal with a slight right tail.
+
+## 2) lattice Graphics
+
+### A. Small-multiple scatter by cylinders
+
+```{r}
+xyplot(mpg ~ wt | cyl_f, data = mtcars,
+       pch = 16,
+       xlab = "Weight (1000 lbs)", ylab = "MPG",
+       main = "lattice: MPG vs Weight by Cylinders",
+       panel = function(x, y, ...) {
+         panel.grid(h = -1, v = -1)
+         panel.xyplot(x, y, ...)
+         panel.lmline(x, y, col = "firebrick", lwd = 2)
+       })
+```
+
+### B. Boxplot of MPG by gears
+
+```{r}
+bwplot(mpg ~ gear_f, data = mtcars,
+       ylab = "MPG", xlab = "Gears",
+       main = "lattice: MPG by Number of Gears")
+```
+
+## 3) ggplot2 Graphics
+
+### A. Scatter with smoothing (color = cylinders)
+
+```{r}
+ggplot(mtcars, aes(wt, mpg, color = cyl_f)) +
+  geom_point(size = 2) +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(title = "ggplot2: MPG vs Weight (with linear trend)",
+       x = "Weight (1000 lbs)", y = "MPG", color = "Cylinders") +
+  theme_minimal(base_size = 13)
+```
+
+### B. Faceted MPG histogram by cylinders
+
+```{r}
+ggplot(mtcars, aes(mpg)) +
+  geom_histogram(binwidth = 2) +
+  facet_wrap(~ cyl_f, nrow = 1) +
+  labs(title = "ggplot2: MPG Distribution by Cylinders", x = "MPG", y = "Count") +
+  theme_classic(base_size = 13)
+```
+
+## Discussion
+
+**Workflow differences.** Base graphics build plots by calling functions (`plot()`, `hist()`) and adding layers (like `abline()`). **lattice** encourages *formulas* and *conditioning* (e.g., `y ~ x | group`) and returns plot objects that are printed. **ggplot2** uses a grammar of layered components (`geom_`, `aes()`, `+`) and provides consistent theming and scales.
+
+**Publication quality vs control.** ggplot2 gave the cleanest results with minimal code and easiest theming. lattice excels at small multiples. Base is flexible but requires more manual styling.
+
+**Challenges/surprises.** Remembering where to add elements differs: `abline()` in base, `panel.lmline()` inside a lattice `panel`, and `geom_smooth(method="lm")` in ggplot2.
+
+---
+
+*End of report.*
