@@ -1,0 +1,16 @@
+Package: aapltools
+Type: Package
+Title: Tools for Exploring Apple (AAPL) Stock Data
+Version: 0.1.0
+Authors@R: 
+    person("Gabriel", "Myles", email = "your_email@usf.edu", role = c("aut", "cre"))
+Description: Provides a small built-in Apple Inc. (AAPL) daily price dataset and helper
+    functions to calculate returns, rolling volatility, and visualize price trends.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    ggplot2,
+    dplyr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

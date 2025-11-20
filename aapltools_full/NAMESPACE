@@ -1,0 +1,8 @@
+export(aapl_daily_returns)
+export(aapl_rolling_volatility)
+export(aapl_plot_prices)
+export(aapl_summary)
+export(aapl_sample)          # <<< ADD THIS LINE
+import(ggplot2)
+import(dplyr)
+S3method(print,aapl_summary)
